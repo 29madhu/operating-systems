@@ -1,0 +1,46 @@
+include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+
+int main() {
+    int fd;
+    char buffer[100];
+
+    // Creating a new file
+    fd = open("example.txt", O_CREAT | O_WRONLY, 0644);
+    if (fd == -1) {
+        perror("Error creating file");
+        return 1;
+    }
+
+    // Writing to the file
+    const char *text = "Hello, this is a test file.\n";
+    write(fd, text, strlen(text));
+
+    // Closing the file
+    close(fd);
+
+    // Reopening the file for reading
+    fd = open("example.txt", O_RDONLY);
+    if (fd == -1) {
+        perror("Error opening file for reading");
+        return 1;
+    }
+
+    // Reading from the file
+    int bytesRead = read(fd, buffer, sizeof(buffer));
+    if (bytesRead == -1) {
+        perror("Error reading from file");
+        return 1;
+    }
+
+    // Displaying the read data
+    printf("Read from file: %s\n", buffer);
+
+    // Closing the file again
+    close(fd);
+
+    return 0;
+}
