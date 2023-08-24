@@ -1,0 +1,41 @@
+#include <stdio.h>
+#include <pthread.h>
+
+#define NUM_THREADS 2
+
+pthread_mutex_t mutex;
+int sharedVariable = 0;
+
+void *threadFunction(void *threadID) {
+    int tid = *((int *)threadID);
+
+    pthread_mutex_lock(&mutex);  // Lock the mutex before accessing shared resource
+
+    printf("Thread %d: Shared variable before increment: %d\n", tid, sharedVariable);
+    sharedVariable++;
+    printf("Thread %d: Shared variable after increment: %d\n", tid, sharedVariable);
+
+    pthread_mutex_unlock(&mutex);  // Unlock the mutex after accessing shared resource
+
+    pthread_exit(NULL);
+}
+
+int main() {
+    pthread_t threads[NUM_THREADS];
+    int threadIDs[NUM_THREADS];
+
+    pthread_mutex_init(&mutex, NULL);
+
+    for (int i = 0; i < NUM_THREADS; i++) {
+        threadIDs[i] = i;
+        pthread_create(&threads[i], NULL, threadFunction, (void *)&threadIDs[i]);
+    }
+
+    for (int i = 0; i < NUM_THREADS; i++) {
+        pthread_join(threads[i], NULL);
+    }
+
+    pthread_mutex_destroy(&mutex);
+
+    return 0;
+}
