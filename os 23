@@ -1,0 +1,63 @@
+#include <stdio.h>
+
+#define MAX_BLOCKS 100
+#define MAX_PROCESS 100
+
+struct Block {
+    int size;
+    int allocated;
+};
+
+struct Process {
+    int size;
+    int blockIndex;
+};
+
+void firstFit(struct Block blocks[], int numBlocks, struct Process processes[], int numProcesses) {
+    for (int i = 0; i < numProcesses; i++) {
+        for (int j = 0; j < numBlocks; j++) {
+            if (blocks[j].allocated == 0 && blocks[j].size >= processes[i].size) {
+                blocks[j].allocated = 1;
+                processes[i].blockIndex = j;
+                break;
+            }
+        }
+    }
+}
+
+int main() {
+    int numBlocks, numProcesses;
+
+    printf("Enter the number of memory blocks: ");
+    scanf("%d", &numBlocks);
+
+    struct Block blocks[MAX_BLOCKS];
+    for (int i = 0; i < numBlocks; i++) {
+        printf("Enter size of block %d: ", i + 1);
+        scanf("%d", &blocks[i].size);
+        blocks[i].allocated = 0;
+    }
+
+    printf("Enter the number of processes: ");
+    scanf("%d", &numProcesses);
+
+    struct Process processes[MAX_PROCESS];
+    for (int i = 0; i < numProcesses; i++) {
+        printf("Enter size of process %d: ", i + 1);
+        scanf("%d", &processes[i].size);
+        processes[i].blockIndex = -1; // -1 indicates not allocated yet
+    }
+
+    firstFit(blocks, numBlocks, processes, numProcesses);
+
+    printf("\nProcess Allocation:\n");
+    for (int i = 0; i < numProcesses; i++) {
+        if (processes[i].blockIndex != -1) {
+            printf("Process %d allocated to Block %d\n", i + 1, processes[i].blockIndex + 1);
+        } else {
+            printf("Process %d could not be allocated\n", i + 1);
+        }
+    }
+
+    return 0;
+}
